@@ -20,6 +20,56 @@ const CATEGORIES = [
 ];
 
 /* Demo products fallback if API fails */
+const DEMO_PRODUCTS = [
+  {
+    _id: "1",
+    title: "iPhone 14 Pro",
+    price: 85000,
+    category: "Mobiles",
+    images: ["https://via.placeholder.com/300x250?text=iPhone+14+Pro"],
+    isActive: true,
+  },
+  {
+    _id: "2",
+    title: "Samsung Smart TV",
+    price: 42000,
+    category: "Electronics",
+    images: ["https://via.placeholder.com/300x250?text=Samsung+TV"],
+    isActive: true,
+  },
+  {
+    _id: "3",
+    title: "Wooden Sofa Set",
+    price: 25000,
+    category: "Furniture",
+    images: ["https://via.placeholder.com/300x250?text=Sofa+Set"],
+    isActive: true,
+  },
+  {
+    _id: "4",
+    title: "Nike Running Shoes",
+    price: 4500,
+    category: "Sports",
+    images: ["https://via.placeholder.com/300x250?text=Shoes"],
+    isActive: true,
+  },
+  {
+    _id: "5",
+    title: "Laptop Dell i7",
+    price: 65000,
+    category: "Electronics",
+    images: ["https://via.placeholder.com/300x250?text=Dell+Laptop"],
+    isActive: true,
+  },
+  {
+    _id: "6",
+    title: "Study Table",
+    price: 6000,
+    category: "Furniture",
+    images: ["https://via.placeholder.com/300x250?text=Study+Table"],
+    isActive: true,
+  },
+];
 
 export default function HomePage() {
   const [products, setProducts] = useState([]);
@@ -36,18 +86,19 @@ export default function HomePage() {
     fetchProducts();
   }, [category, page, search]);
 
-  const fetchProducts = async () => {
+
+
+
+   const fetchProducts = async () => {
     try {
       setLoading(true);
 
       const params = { page, limit: 12 };
 
-      if (category !== "all") params.category = category;
+      if (category !== "All") params.category = category;
       if (search) params.search = search;
 
       const { data } = await productAPI.getAll(params);
-
-      console.log("Products API response:", data);
 
       setProducts(data?.products || []);
       setPages(data?.pages || 1);
@@ -55,15 +106,30 @@ export default function HomePage() {
     } catch (error) {
       console.error("Product fetch error:", error);
 
-      toast.error("Failed to load products, showing demo data");
+      toast.error("API failed. Showing demo products");
 
-      setProducts();
+      // fallback demo products
+      let filtered = [...DEMO_PRODUCTS];
+
+      if (category !== "All") {
+        filtered = filtered.filter((p) => p.category === category);
+      }
+
+      if (search) {
+        filtered = filtered.filter((p) =>
+          p.title.toLowerCase().includes(search.toLowerCase())
+        );
+      }
+
+      setProducts(filtered);
       setPages(1);
-      setTotal();
+      setTotal(filtered.length);
     } finally {
       setLoading(false);
     }
   };
+
+
 
   return (
     <>
