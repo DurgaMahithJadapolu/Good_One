@@ -64,6 +64,18 @@ app.use('/api/vendors', require('./Routes/vendorRoutes'));
 // Health check
 app.get('/api/health', (req, res) => res.json({ status: 'OK', timestamp: new Date() }));
 
+
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Backend is running successfully on Render 🚀',
+    time: new Date().toISOString()
+  });
+});
+
+
+
+
 // Socket.IO for real-time chat
 const connectedUsers = new Map();
 
